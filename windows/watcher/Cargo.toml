@@ -1,0 +1,14 @@
+[package]
+name = "watcher"
+version = "0.1.0"
+authors = ["cong wu <1875486458@qq.com>"]
+
+[dependencies]
+kernel32-sys = "*"
+winapi = "*"
+user32-sys = "0.1.2"
+error-chain = "0.11.0"
+chrono = "0.4"
+hado = "0.1.0"
+hostname = "^0.1"
+wmi = { path = "../../../wmi-rs" }
