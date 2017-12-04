@@ -4,7 +4,7 @@ const INTERVAL = 10000;
 const config = { apiAddress: 'http://127.0.0.1:9527/api' }
 class Api {
     static async post(data) {
-        const url = `${config.apiAddress}/report`;
+        const url = `${config.apiAddress}/reporter`;
         return new Promise((res, rej) => {
             fetch(url, {
                 method: 'post',
@@ -34,7 +34,9 @@ function ask() {
         tabs.map(function (tab) {
             if (tab.id) {
                 chrome.tabs.sendMessage(tab.id, { cmd: "statistics" }, function (response) {
-                    reportToServer(response);
+                    if (["", null, undefined].indexOf(response) != -1) {
+                        reportToServer(response);
+                    }
                 });
             }
         });

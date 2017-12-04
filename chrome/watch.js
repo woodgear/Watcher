@@ -4,6 +4,7 @@ function statistics() {
     const title = document.title;
     const time = new Date().toString();
     const data = { host, href, title, time };
+    console.log("on call statistics",data)
     return data;
 
 }
@@ -26,5 +27,6 @@ sendToBackground(statistics());
 //send statistics with background ask
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
+        console.log("on background ask")
         sendResponse(cmd[request.cmd]());
     });
