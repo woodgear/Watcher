@@ -15,6 +15,7 @@ class WindowsProgram extends BaseReporter {
     }
     async get() {
         try {
+            console.log('getAll',this.id);
             const model = new WpModel(this.id);
             const data = await model.getAll();
             this.res.json(data)
@@ -76,6 +77,7 @@ class WindowsProgram extends BaseReporter {
 
     async _create() {
         const newEvent = this.buildNewEvent(this.req.body);
+        console.log(newEvent);
         const lastEvent = await this.getLastEvent();
         if (this.isSameEvent(lastEvent, newEvent)) {
             const updatedLastEvent = this.expandLastEvent(lastEvent, newEvent);
