@@ -2,35 +2,46 @@ const fs = require('fs');
 const path = require("path");
 
 const Sequelize = require('sequelize');
-const Sqlite3 = require('sqlite3');
+const Sqlite3 = require('sqlite3').verbose();
 
 const dbInstance = {};
 
 class DB {
-    constructor(id, path) {
+    constructor(id) {
         this.id = id;
         this._dbInstance = null;
     }
 
     async createSqlite3DbFile(DBpath) {
-        return new Promise((res, rej) => {
+        const res = await new Promise((res, rej) => {
             const db = new Sqlite3.Database(DBpath, (e) => {
                 if (e) {
                     rej(e)
                 }
-                res(e)
-            })
-            db.close();
-        })
+                db.close();
+                res()
+            });
+        });
     }
     async get() {
-        if (!dbInstance[this.id]) {
-            const db = await this.initDB();
-            this._dbInstance = db;
-            dbInstance[this.id] = this._dbInstance;
+        try {
+            const dbPath = this.getDbPath();
+            if (!fs.existsSync(dbPath)) {
+                await this.createSqlite3DbFile(dbPath);
+                dbInstance[this.id] = null;
+            }
+
+            if (!dbInstance[this.id]) {
+                const db = await this.initDB();
+                this._dbInstance = db;
+                dbInstance[this.id] = this._dbInstance;
+            }
+            Object.assign(this, dbInstance[this.id].models);
+            return this;
+        } catch (error) {
+            console.log(error);
+            throw new Error(`could not get db instance of ${this.id}`, error)
         }
-        Object.assign(this, this._dbInstance.models);
-        return this;
     }
 
     getDbPath() {
@@ -38,14 +49,14 @@ class DB {
     }
     async initDB() {
         const dbPath = this.getDbPath();
-        if (!fs.existsSync(dbPath)) {
-            await this.createSqlite3DbFile(dbPath);
-        }
+
         const db = new Sequelize({
             operatorsAliases: false,
             database: this.id,
             dialect: 'sqlite',
-            storage: dbPath
+            storage: dbPath,
+            logging: false,
+            freezeTableName: true,
         });
         const schemaDir = path.join(__dirname, 'schemas');
         fs.readdirSync(schemaDir).forEach((filename) => {
@@ -57,4 +68,9 @@ class DB {
     }
 }
 
-module.exports = DB;
+async function getModel(id, name) {
+    const db = await new DB(id).get();
+    return db[name];
+}
+
+module.exports = { DB, getModel };

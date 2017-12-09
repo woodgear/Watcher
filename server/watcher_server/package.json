@@ -4,13 +4,14 @@
   "description": "watcher server",
   "main": "app.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha test/*/*.test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "moment": "^2.19.3",
     "sequelize": "^4.27.0",
     "sqlite3": "^3.1.13",
     "uuid": "^3.1.0"
@@ -19,6 +20,7 @@
     "chai": "^4.1.2",
     "expect.js": "^0.3.1",
     "mocha": "^4.0.1",
+    "mock-express-response": "^0.2.2",
     "sinon": "^4.1.3"
   }
 }

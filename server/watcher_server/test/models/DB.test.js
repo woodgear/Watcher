@@ -1,8 +1,9 @@
-const DB = require('../src/models/DB');
+const {DB} = require('../../src/models/DB');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const fs = require('fs');
 const uuid = require('uuid/v4');
+const path = require("path");
 
 function del(path) {
   if (fs.existsSync(path)) {
@@ -10,9 +11,9 @@ function del(path) {
   }
 }
 describe('getModel', () => {
-  describe('#get', () => {
+  describe('#get',async () => {
     let sandbox = null;
-    const mockDbPath = './mockId.sqlite';
+    const mockDbPath = path.join(__dirname, 'mockId.sqlite');
     beforeEach(() => {
       del(mockDbPath);
       sandbox = sinon.createSandbox();
@@ -23,7 +24,7 @@ describe('getModel', () => {
       sandbox.restore();
     });
 
-    it.only('should return ssequelize db instance initDb', async () => {
+    it('should return ssequelize db instance initDb', async () => {
       sandbox.stub(DB.prototype, 'getDbPath').callsFake(() => mockDbPath);
       const db = await new DB('mockId').get();
       expect(fs.existsSync(mockDbPath)).to.be.true;
@@ -50,17 +51,17 @@ describe('getModel', () => {
   });
 
   describe('#createSqlite3DbFile', () => {
-    const dbPath = `./${uuid()}.sqlite`;
+    const dbPath = path.join(__dirname, `./${uuid()}.sqlite`);
     beforeEach(() => {
-      fs.unlinkSync(dbPath);
+      del(dbPath);
     });
     afterEach(() => {
-      fs.unlinkSync(dbPath);
+      del(dbPath);
     });
     it('should create a sqlite db', async () => {
-      const db = await new DB('mockId').createSqlite3DbFile(dbPath);
+      const db = new DB('mockId');
+      await db.createSqlite3DbFile(dbPath);
       expect(fs.existsSync(dbPath)).to.be.true;
     });
   });
-
 });
