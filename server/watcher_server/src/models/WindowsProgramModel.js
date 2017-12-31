@@ -30,18 +30,21 @@ class WindowsProgramModel {
         const res = await model.findAll({ raw: true });
         return WindowsProgramModel.format(res);
     }
-    async getCurrentRange() {
-        return getRange()
-    }
     async getRange(leftDate, rightDate) {
+        console.log(leftDate, rightDate);
         const left = new Date(leftDate);
         const right = new Date(rightDate);
 
+        console.log(left, right);
         const model = await getModel(this.id, 'WindowsProgram');
         const res = await model.findAll({
             where: {
-                startTime: { [Op.gte]: left },
-                endTime: { [Op.lte]: right }
+                startTime: {
+                    [Op.gte]: left
+                },
+                endTime: {
+                    [Op.lte]: right
+                }
             },
             raw: true,
         });

@@ -15,15 +15,21 @@ class WindowsProgram extends BaseReporter {
     }
     async get() {
         try {
-            console.log('getAll',this.id);
             const model = new WpModel(this.id);
+            if (this.req.query.left && this.req.query.left) {
+                const data = await model.getRange(this.req.query.left, this.req.query.right);
+                return this.res.json([{ actor: 'windows', data }])
+
+            }
             const data = await model.getAll();
-            this.res.json(data)
+            return this.res.json([{ actor: 'windows', data }])
+
         } catch (error) {
             console.log(error);
             this.res.sendStatus(500);
         }
     }
+
 
     isSameEvent(lastEvent, event) {
         if (!lastEvent) {
@@ -54,7 +60,11 @@ class WindowsProgram extends BaseReporter {
     async updateLastEvent(event) {
         const db = await new DB(this.id).get();
         const model = db.WindowsProgram;
-        const lastEvent = await model.findOne({ order: [['createdAt', 'DESC']] });
+        const lastEvent = await model.findOne({
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
         if (lastEvent) {
             await lastEvent.update(event)
         } else {
@@ -65,7 +75,12 @@ class WindowsProgram extends BaseReporter {
     async getLastEvent() {
         const db = await new DB(this.id).get();
         const model = db.WindowsProgram;
-        const event = await model.findOne({ order: [['createdAt', 'DESC']], raw: true });
+        const event = await model.findOne({
+            order: [
+                ['createdAt', 'DESC']
+            ],
+            raw: true
+        });
         return event;
     }
 
@@ -76,6 +91,7 @@ class WindowsProgram extends BaseReporter {
     }
 
     async _create() {
+        console.log('create', this.req.body);
         const newEvent = this.buildNewEvent(this.req.body);
         console.log(newEvent);
         const lastEvent = await this.getLastEvent();

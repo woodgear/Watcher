@@ -7,14 +7,14 @@ const app = express();
 
 app.use(bodyParser.json())
 
-app.post('/api/v1/reporter/windows_program', (req, res) => {
+app.post('/api/v1/reporter/windows', (req, res) => {
     new WP(req, res).create();
 })
 
-app.get('/api/v1/reporter/windows_program', (req, res) => {
+app.get('/api/v1/reporter/windows', (req, res) => {
     new WP(req, res).get();
 })
 
-app.listen(3000,()=>{
+app.listen(3000, () => {
     console.log('create server start on 3000');
 });
